@@ -1,0 +1,638 @@
+<title>Asteroid</title>
+<meta name="description" content="Asteroid is a website build studio — we design, build, and ship fast, high-converting websites for ambitious brands.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ---------- tokens ---------- */
+  :root{
+    --bg: #EEF0F0;
+    --surface: #E3E6E5;
+    --surface-2: #D9DCDB;
+    --text: #14161A;
+    --text-muted: #55595E;
+    --accent: #8C6A24;
+    --accent-contrast: #FFFFFF;
+    --line: rgba(20,22,26,0.14);
+    --line-soft: rgba(20,22,26,0.08);
+
+    --hero-bg-a: #17191D;
+    --hero-bg-b: #0E0F12;
+    --hero-text: #F1F0EA;
+    --hero-text-muted: #9A9D9F;
+    --hero-accent: #E8B04B;
+    --hero-line: rgba(241,240,234,0.14);
+
+    --font-display: "Big Shoulders Display", "Arial Narrow", sans-serif;
+    --font-body: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
+
+    --radius: 3px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg: #15171B;
+      --surface: #1D2025;
+      --surface-2: #262A30;
+      --text: #F1F0EA;
+      --text-muted: #9A9D9F;
+      --accent: #E8B04B;
+      --accent-contrast: #15171B;
+      --line: rgba(241,240,234,0.14);
+      --line-soft: rgba(241,240,234,0.08);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #15171B;
+    --surface: #1D2025;
+    --surface-2: #262A30;
+    --text: #F1F0EA;
+    --text-muted: #9A9D9F;
+    --accent: #E8B04B;
+    --accent-contrast: #15171B;
+    --line: rgba(241,240,234,0.14);
+    --line-soft: rgba(241,240,234,0.08);
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; color-scheme:light dark; }
+  a:focus-visible, button:focus-visible, .btn:focus-visible{
+    outline:2px solid var(--accent); outline-offset:3px;
+  }
+  nav a:focus-visible, .hero a:focus-visible, .cta-band a:focus-visible{
+    outline-color:var(--hero-accent);
+  }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    font-size:16px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  img,canvas{ display:block; max-width:100%; }
+  a{ color:inherit; }
+  .wrap{
+    width:100%;
+    max-width:1180px;
+    margin-inline:auto;
+    padding-inline:clamp(20px,5vw,48px);
+  }
+  h1,h2,h3{ text-wrap:balance; margin:0; font-weight:700; }
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:0.75rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--hero-accent);
+  }
+  .eyebrow.on-body{ color:var(--accent); }
+  .num{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+
+  section{ padding-block:clamp(64px,10vw,120px); }
+
+  /* ---------- nav ---------- */
+  nav{
+    position:fixed; inset:0 0 auto 0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px clamp(20px,5vw,48px);
+    background:transparent;
+    border-bottom:1px solid transparent;
+    transition:background .35s ease, border-color .35s ease, backdrop-filter .35s ease;
+  }
+  nav.scrolled{
+    background:color-mix(in srgb, var(--hero-bg-a) 88%, transparent);
+    border-bottom-color:var(--hero-line);
+    backdrop-filter:blur(10px);
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family:var(--font-mono); font-weight:500;
+    letter-spacing:0.08em; font-size:0.95rem;
+    color:var(--hero-text); text-decoration:none;
+  }
+  .brand svg{ width:22px; height:22px; flex:none; }
+  .nav-links{
+    display:flex; align-items:center; gap:clamp(18px,3vw,34px);
+    list-style:none; margin:0; padding:0;
+  }
+  .nav-links a{
+    text-decoration:none; color:var(--hero-text-muted);
+    font-size:0.9rem; transition:color .2s ease;
+  }
+  .nav-links a:hover{ color:var(--hero-text); }
+  .nav-links{ display:none; }
+  @media (min-width:800px){ .nav-links{ display:flex; } }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--font-body); font-weight:600; font-size:0.9rem;
+    padding:11px 20px; border-radius:var(--radius);
+    background:var(--hero-accent); color:#17191D;
+    text-decoration:none; border:1px solid transparent;
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+  .btn:hover{ transform:translateY(-1px); box-shadow:0 6px 20px rgba(232,176,75,0.28); }
+  .btn.ghost{
+    background:transparent; color:var(--hero-text);
+    border-color:var(--hero-line);
+  }
+  .btn.ghost:hover{ border-color:var(--hero-accent); box-shadow:none; }
+  .btn.on-body{ background:var(--accent); color:var(--accent-contrast); }
+  .btn.on-body:hover{ box-shadow:0 6px 20px color-mix(in srgb, var(--accent) 35%, transparent); }
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative; overflow:hidden;
+    background:radial-gradient(ellipse 120% 90% at 78% 8%, #23262c 0%, var(--hero-bg-a) 45%, var(--hero-bg-b) 100%);
+    color:var(--hero-text);
+    padding-top:clamp(140px,20vw,200px);
+    padding-bottom:clamp(60px,10vw,100px);
+  }
+  .hero::before{
+    content:""; position:absolute; inset:0;
+    background-image:
+      radial-gradient(1px 1px at 12% 22%, rgba(241,240,234,0.5) 0, transparent 60%),
+      radial-gradient(1px 1px at 34% 68%, rgba(241,240,234,0.35) 0, transparent 60%),
+      radial-gradient(1.5px 1.5px at 62% 14%, rgba(241,240,234,0.4) 0, transparent 60%),
+      radial-gradient(1px 1px at 81% 52%, rgba(241,240,234,0.3) 0, transparent 60%),
+      radial-gradient(1px 1px at 92% 78%, rgba(241,240,234,0.4) 0, transparent 60%),
+      radial-gradient(1.5px 1.5px at 24% 85%, rgba(241,240,234,0.3) 0, transparent 60%);
+    pointer-events:none;
+  }
+  .hero-grid{
+    position:relative; z-index:1;
+    display:grid; grid-template-columns:1fr; gap:56px;
+    align-items:center;
+  }
+  @media (min-width:940px){ .hero-grid{ grid-template-columns:1.2fr 0.9fr; gap:24px; } }
+  .hero h1{
+    font-family:var(--font-display);
+    font-weight:800; font-stretch:condensed;
+    font-size:clamp(2.9rem,7.2vw,6rem);
+    line-height:0.94; letter-spacing:-0.01em;
+    text-transform:uppercase;
+    margin-block:18px 22px;
+  }
+  .hero p.lede{
+    max-width:46ch; color:var(--hero-text-muted);
+    font-size:clamp(1.02rem,1.4vw,1.15rem); line-height:1.6;
+  }
+  .hero-actions{ display:flex; flex-wrap:wrap; gap:14px; margin-top:32px; }
+
+  .orbit-panel{
+    position:relative;
+    border:1px solid var(--hero-line);
+    border-radius:4px;
+    background:rgba(241,240,234,0.03);
+    padding:18px;
+  }
+  .orbit-panel canvas{ width:100%; height:260px; }
+  .telemetry{
+    display:grid; grid-template-columns:1fr 1fr; gap:10px 18px;
+    margin-top:14px; padding-top:14px; border-top:1px dashed var(--hero-line);
+  }
+  .telemetry div{ font-family:var(--font-mono); font-size:0.72rem; color:var(--hero-text-muted); }
+  .telemetry div b{ display:block; color:var(--hero-text); font-size:0.95rem; font-weight:500; margin-top:2px; }
+
+  /* ---------- marquee ---------- */
+  .marquee-band{
+    background:var(--hero-bg-b); border-top:1px solid var(--hero-line); border-bottom:1px solid var(--hero-line);
+    padding-block:26px; overflow:hidden;
+  }
+  .marquee-track{
+    display:flex; gap:64px; width:max-content;
+    animation:scroll-left 34s linear infinite;
+  }
+  @media (prefers-reduced-motion:reduce){ .marquee-track{ animation:none; } }
+  @keyframes scroll-left{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+  .marquee-track span{
+    font-family:var(--font-mono); font-size:0.95rem; letter-spacing:0.04em;
+    color:var(--hero-text-muted); white-space:nowrap;
+  }
+
+  /* ---------- reveal ---------- */
+  .reveal{ opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease; }
+  .reveal.in{ opacity:1; transform:none; }
+  @media (prefers-reduced-motion:reduce){ .reveal{ opacity:1; transform:none; transition:none; } }
+
+  /* ---------- section heads ---------- */
+  .section-head{
+    display:flex; flex-direction:column; gap:10px;
+    margin-bottom:clamp(36px,6vw,56px);
+    max-width:60ch;
+  }
+  .section-head h2{
+    font-family:var(--font-display); font-weight:700;
+    font-size:clamp(2rem,4.2vw,3.1rem); line-height:1;
+    text-transform:uppercase; letter-spacing:-0.005em;
+  }
+
+  /* ---------- services (manifest rows) ---------- */
+  .manifest{ border-top:1px solid var(--line); }
+  .manifest-row{
+    display:grid; grid-template-columns:64px 1fr; gap:24px;
+    padding-block:28px; border-bottom:1px solid var(--line);
+  }
+  @media (min-width:720px){ .manifest-row{ grid-template-columns:64px 1fr 1fr; } }
+  .manifest-row .num{ font-size:1.05rem; color:var(--accent); }
+  .manifest-row h3{
+    font-family:var(--font-display); font-weight:700; text-transform:uppercase;
+    font-size:1.5rem; letter-spacing:0.01em;
+  }
+  .manifest-row p{ margin:8px 0 0; color:var(--text-muted); max-width:52ch; }
+
+  /* ---------- work grid ---------- */
+  .work-grid{ display:grid; grid-template-columns:1fr; gap:1px; background:var(--line); border:1px solid var(--line); }
+  @media (min-width:720px){ .work-grid{ grid-template-columns:1fr 1fr; } }
+  @media (min-width:1080px){ .work-grid{ grid-template-columns:1fr 1fr 1fr; } }
+  .work-card{
+    position:relative; background:var(--surface);
+    padding:26px; min-height:200px;
+    display:flex; flex-direction:column; justify-content:space-between;
+    transition:background .2s ease;
+  }
+  .work-card::after{
+    content:""; position:absolute; top:12px; right:12px; width:9px; height:9px;
+    border-top:1.5px solid var(--accent); border-right:1.5px solid var(--accent);
+    opacity:0; transition:opacity .2s ease;
+  }
+  .work-card:hover{ background:var(--surface-2); }
+  .work-card:hover::after{ opacity:1; }
+  .work-card .tag{ font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); }
+  .work-card h3{ font-family:var(--font-display); font-weight:700; font-size:1.6rem; text-transform:uppercase; margin-top:10px; }
+  .work-card .result{ margin-top:18px; display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+  .work-card .result .stat{ font-family:var(--font-mono); font-size:0.85rem; color:var(--accent); }
+  .work-card .result a{ font-size:0.82rem; text-decoration:none; color:var(--text-muted); opacity:0; transform:translateX(-4px); transition:all .2s ease; }
+  .work-card:hover .result a{ opacity:1; transform:none; }
+
+  /* ---------- process ---------- */
+  .process-list{ display:grid; grid-template-columns:1fr; gap:0; }
+  .process-item{
+    display:grid; grid-template-columns:56px 1fr; gap:20px;
+    padding-block:30px; position:relative;
+  }
+  .process-item:not(:last-child){ border-bottom:1px dashed var(--line); }
+  .process-item .marker{
+    width:40px; height:40px; border-radius:50%;
+    border:1.5px solid var(--accent); color:var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-mono); font-size:0.85rem;
+  }
+  @media (min-width:760px){
+    .process-item{ grid-template-columns:56px 1fr 200px; align-items:start; }
+  }
+  .process-item h3{ font-family:var(--font-display); text-transform:uppercase; font-size:1.4rem; font-weight:700; }
+  .process-item p{ margin:8px 0 0; color:var(--text-muted); max-width:46ch; }
+  .process-item .when{ font-family:var(--font-mono); font-size:0.78rem; color:var(--text-muted); margin-top:12px; }
+  @media (min-width:760px){ .process-item .when{ text-align:right; margin-top:2px; } }
+
+  /* ---------- stats ---------- */
+  .stats-band{ background:var(--surface); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .stats-grid{ display:grid; grid-template-columns:repeat(2,1fr); }
+  @media (min-width:760px){ .stats-grid{ grid-template-columns:repeat(4,1fr); } }
+  .stat-item{ padding:36px 20px; text-align:center; border-left:1px solid var(--line); }
+  .stat-item:first-child{ border-left:none; }
+  .stat-item .num{ display:block; font-family:var(--font-display); font-weight:800; font-size:clamp(1.9rem,4vw,2.7rem); color:var(--accent); }
+  .stat-item .label{ font-size:0.82rem; color:var(--text-muted); margin-top:4px; }
+
+  /* ---------- testimonial ---------- */
+  .testimonial{ max-width:72ch; margin-inline:auto; text-align:center; }
+  .testimonial blockquote{
+    margin:0; font-family:var(--font-display); font-weight:600;
+    font-size:clamp(1.4rem,3vw,2.1rem); line-height:1.28; text-wrap:balance;
+  }
+  .testimonial cite{ display:block; margin-top:22px; font-style:normal; font-family:var(--font-mono); font-size:0.85rem; color:var(--text-muted); }
+
+  /* ---------- final cta ---------- */
+  .cta-band{
+    background:radial-gradient(ellipse 100% 140% at 20% 0%, #23262c 0%, var(--hero-bg-a) 45%, var(--hero-bg-b) 100%);
+    color:var(--hero-text); text-align:center;
+  }
+  .cta-band h2{
+    font-family:var(--font-display); font-weight:800; text-transform:uppercase;
+    font-size:clamp(2.2rem,5.6vw,4.2rem); line-height:0.98;
+  }
+  .cta-band p{ color:var(--hero-text-muted); max-width:50ch; margin:18px auto 0; }
+  .cta-band .hero-actions{ justify-content:center; margin-top:30px; }
+
+  /* ---------- footer ---------- */
+  footer{ background:var(--bg); border-top:1px solid var(--line); padding-block:56px 32px; }
+  .footer-top{ display:flex; flex-wrap:wrap; gap:40px; justify-content:space-between; padding-bottom:40px; border-bottom:1px solid var(--line); }
+  .footer-brand{ max-width:32ch; }
+  .footer-brand .brand{ color:var(--text); margin-bottom:12px; }
+  .footer-brand p{ color:var(--text-muted); font-size:0.92rem; }
+  .footer-cols{ display:flex; gap:56px; flex-wrap:wrap; }
+  .footer-col h4{ font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin:0 0 14px; }
+  .footer-col ul{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .footer-col a{ text-decoration:none; font-size:0.92rem; color:var(--text); }
+  .footer-col a:hover{ color:var(--accent); }
+  .footer-bottom{ display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; padding-top:24px; font-family:var(--font-mono); font-size:0.78rem; color:var(--text-muted); }
+</style>
+
+<nav id="site-nav">
+  <a class="brand" href="#top">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <ellipse cx="12" cy="12" rx="10.5" ry="4.6" stroke="currentColor" stroke-width="1.3" transform="rotate(-18 12 12)"/>
+      <circle cx="16.4" cy="8" r="2.1" fill="#E8B04B"/>
+    </svg>
+    ASTEROID
+  </a>
+  <ul class="nav-links">
+    <li><a href="#work">Work</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a class="btn" href="#contact">Start a project</a>
+</nav>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Website Build Studio — Design / Development / Launch</p>
+        <h1>We build websites<br>that hit on impact.</h1>
+        <p class="lede">Asteroid is a small studio that designs, builds, and ships fast, high-converting websites for ambitious brands — from first sketch to launch day, in weeks, not months.</p>
+        <div class="hero-actions">
+          <a class="btn" href="#contact">Start a project</a>
+          <a class="btn ghost" href="#work">See our work ↓</a>
+        </div>
+      </div>
+      <div class="orbit-panel">
+        <canvas id="orbit" width="520" height="260" aria-hidden="true"></canvas>
+        <div class="telemetry">
+          <div>VELOCITY<b>24,300 km/h</b></div>
+          <div>TRAJECTORY<b>Locked</b></div>
+          <div>PAYLOAD<b>Your brand</b></div>
+          <div>ETA<b>Launch day</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee-band" aria-label="Trusted by">
+    <div class="marquee-track">
+      <span>LUMEN OUTDOOR</span><span>SOLACE CLINICS</span><span>NORTHBOUND CAPITAL</span><span>FERRO &amp; OAK</span><span>HALIDE COFFEE</span><span>VANTAGE LEGAL</span>
+      <span>LUMEN OUTDOOR</span><span>SOLACE CLINICS</span><span>NORTHBOUND CAPITAL</span><span>FERRO &amp; OAK</span><span>HALIDE COFFEE</span><span>VANTAGE LEGAL</span>
+    </div>
+  </div>
+
+  <section id="services">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow on-body">Services</p>
+        <h2>What we build</h2>
+      </div>
+      <div class="manifest reveal">
+        <div class="manifest-row">
+          <span class="num">01</span>
+          <h3>Web Design</h3>
+          <p>Interfaces engineered to earn trust in the first five seconds — grounded in your brand, tuned by data.</p>
+        </div>
+        <div class="manifest-row">
+          <span class="num">02</span>
+          <h3>Development</h3>
+          <p>Hand-built, framework-lean, and fast. No bloated page-builder underneath — just clean, maintainable code.</p>
+        </div>
+        <div class="manifest-row">
+          <span class="num">03</span>
+          <h3>E-Commerce</h3>
+          <p>Storefronts designed around the checkout, not just the homepage. Every step engineered to convert.</p>
+        </div>
+        <div class="manifest-row">
+          <span class="num">04</span>
+          <h3>Brand &amp; Content</h3>
+          <p>Copywriting, photography direction, and design systems that keep every page on-brand, long after launch.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow on-body">Selected Work</p>
+        <h2>Recent launches</h2>
+      </div>
+      <div class="work-grid reveal">
+        <div class="work-card">
+          <div><span class="tag">DTC / Outdoor Gear</span><h3>Lumen Outdoor</h3></div>
+          <div class="result"><span class="stat">+64% conversion</span><a href="#contact">View case study →</a></div>
+        </div>
+        <div class="work-card">
+          <div><span class="tag">Healthcare</span><h3>Solace Clinics</h3></div>
+          <div class="result"><span class="stat">-40% time to book</span><a href="#contact">View case study →</a></div>
+        </div>
+        <div class="work-card">
+          <div><span class="tag">Fintech</span><h3>Northbound Capital</h3></div>
+          <div class="result"><span class="stat">3.2x organic traffic</span><a href="#contact">View case study →</a></div>
+        </div>
+        <div class="work-card">
+          <div><span class="tag">Furniture / D2C</span><h3>Ferro &amp; Oak</h3></div>
+          <div class="result"><span class="stat">Shipped in 18 days</span><a href="#contact">View case study →</a></div>
+        </div>
+        <div class="work-card">
+          <div><span class="tag">Hospitality / Retail</span><h3>Halide Coffee</h3></div>
+          <div class="result"><span class="stat">+31% online orders</span><a href="#contact">View case study →</a></div>
+        </div>
+        <div class="work-card">
+          <div><span class="tag">Professional Services</span><h3>Vantage Legal</h3></div>
+          <div class="result"><span class="stat">112 leads / month</span><a href="#contact">View case study →</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="process">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow on-body">Process</p>
+        <h2>From coordinates to launch</h2>
+      </div>
+      <div class="process-list reveal">
+        <div class="process-item">
+          <div class="marker">01</div>
+          <div><h3>Discover</h3><p>Audit your current site, map the competitive landscape, and lock a plan.</p></div>
+          <div class="when">Week 1</div>
+        </div>
+        <div class="process-item">
+          <div class="marker">02</div>
+          <div><h3>Design</h3><p>Wireframes to high-fidelity comps, reviewed and refined with you at every step.</p></div>
+          <div class="when">Weeks 2–3</div>
+        </div>
+        <div class="process-item">
+          <div class="marker">03</div>
+          <div><h3>Build</h3><p>Hand-coded, responsive, and fast — tested across devices before it ever ships.</p></div>
+          <div class="when">Weeks 3–4</div>
+        </div>
+        <div class="process-item">
+          <div class="marker">04</div>
+          <div><h3>Launch</h3><p>We ship, monitor real traffic, and tune what the data tells us to.</p></div>
+          <div class="when">Week 5+</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="stats-band reveal">
+    <div class="wrap stats-grid">
+      <div class="stat-item"><span class="num">120+</span><span class="label">Sites launched</span></div>
+      <div class="stat-item"><span class="num">3.2 wks</span><span class="label">Average build time</span></div>
+      <div class="stat-item"><span class="num">98</span><span class="label">Avg. Lighthouse score</span></div>
+      <div class="stat-item"><span class="num">4.9/5</span><span class="label">Client rating</span></div>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap testimonial reveal">
+      <blockquote>"Asteroid didn't just redesign our site — they rebuilt how people understand what we do in the first five seconds. Our new homepage converted better in its first week than the old one did all last year."</blockquote>
+      <cite>Priya Nandan — Head of Growth, Northbound Capital</cite>
+    </div>
+  </section>
+
+  <section class="cta-band" id="contact">
+    <div class="wrap reveal">
+      <h2>Got a launch date<br>in mind?</h2>
+      <p>Tell us about the project. We reply within one business day with next steps and a realistic timeline.</p>
+      <div class="hero-actions">
+        <a class="btn" href="mailto:hello@asteroid.studio">Start a project</a>
+        <a class="btn ghost" href="mailto:hello@asteroid.studio">hello@asteroid.studio</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap footer-top">
+    <div class="footer-brand">
+      <a class="brand" href="#top">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <ellipse cx="12" cy="12" rx="10.5" ry="4.6" stroke="currentColor" stroke-width="1.3" transform="rotate(-18 12 12)"/>
+          <circle cx="16.4" cy="8" r="2.1" fill="#8C6A24"/>
+        </svg>
+        ASTEROID
+      </a>
+      <p>Websites that hit on impact. A small studio building fast, high-converting sites for ambitious brands — remote-first, worldwide.</p>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h4>Sitemap</h4>
+        <ul>
+          <li><a href="#work">Work</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#process">Process</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Elsewhere</h4>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">LinkedIn</a></li>
+          <li><a href="#">Dribbble</a></li>
+          <li><a href="#">X / Twitter</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>© 2026 Asteroid Studio. All rights reserved.</span>
+    <span>Remote-first — worldwide</span>
+  </div>
+</footer>
+
+<script>
+  // nav background on scroll
+  var nav = document.getElementById('site-nav');
+  window.addEventListener('scroll', function(){
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+
+  // scroll reveal
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var revealEls = document.querySelectorAll('.reveal');
+  if (reduceMotion || !('IntersectionObserver' in window)) {
+    revealEls.forEach(function(el){ el.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(function(el){ io.observe(el); });
+  }
+
+  // orbit canvas
+  var canvas = document.getElementById('orbit');
+  if (canvas) {
+    var ctx = canvas.getContext('2d');
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    function size(){
+      var rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    size();
+    window.addEventListener('resize', size);
+
+    var t = 0;
+    function draw(){
+      var w = canvas.clientWidth, h = canvas.clientHeight;
+      var cx = w * 0.5, cy = h * 0.55;
+      ctx.clearRect(0,0,w,h);
+
+      // impact point
+      ctx.strokeStyle = 'rgba(241,240,234,0.18)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 4, 0, Math.PI*2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(cx, cy, 10, 0, Math.PI*2);
+      ctx.stroke();
+
+      // orbit ellipses (trajectory rings)
+      var rings = [ {rx: w*0.36, ry: h*0.30}, {rx: w*0.27, ry: h*0.22}, {rx: w*0.17, ry: h*0.13} ];
+      rings.forEach(function(r, i){
+        ctx.strokeStyle = 'rgba(241,240,234,' + (0.10 + i*0.03) + ')';
+        ctx.setLineDash([2,5]);
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, r.rx, r.ry, -0.28, 0, Math.PI*2);
+        ctx.stroke();
+      });
+      ctx.setLineDash([]);
+
+      // orbiting dot spiraling toward impact
+      var progress = (t % 420) / 420;
+      var decay = 1 - progress * 0.72;
+      var angle = progress * Math.PI * 2 * 2.2;
+      var rx = w*0.36 * decay, ry = h*0.30 * decay;
+      var rot = -0.28;
+      var ex = Math.cos(angle) * rx, ey = Math.sin(angle) * ry;
+      var px = cx + (ex * Math.cos(rot) - ey * Math.sin(rot));
+      var py = cy + (ex * Math.sin(rot) + ey * Math.cos(rot));
+
+      var glow = ctx.createRadialGradient(px,py,0,px,py,10);
+      glow.addColorStop(0, 'rgba(232,176,75,0.9)');
+      glow.addColorStop(1, 'rgba(232,176,75,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(px,py,10,0,Math.PI*2);
+      ctx.fill();
+
+      ctx.fillStyle = '#E8B04B';
+      ctx.beginPath();
+      ctx.arc(px,py,2.6,0,Math.PI*2);
+      ctx.fill();
+
+      t += reduceMotion ? 0 : 1;
+      requestAnimationFrame(draw);
+    }
+    draw();
+  }
+</script>
