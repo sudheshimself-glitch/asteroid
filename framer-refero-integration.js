@@ -3,10 +3,16 @@
 const https = require('https');
 const fs = require('fs');
 
-// Configuration
-const FRAMER_API_KEY = 'fr_56gd97bcmv96y8p4c7a1fcdg7b';
-const PROJECT_ID = 'LPtzPpiLVfzQOuHBaXEt';
-const REFERO_API_URL = 'https://api.refero.design';
+// Configuration - set these via environment variables, never hardcode credentials
+const FRAMER_API_KEY = process.env.FRAMER_API_KEY;
+const PROJECT_ID = process.env.FRAMER_PROJECT_ID;
+const REFERO_API_URL = process.env.REFERO_API_URL || 'https://api.refero.design';
+const REFERO_TOKEN = process.env.REFERO_TOKEN || null;
+
+if (!FRAMER_API_KEY || !PROJECT_ID) {
+  console.error('❌ Missing required environment variables: FRAMER_API_KEY and FRAMER_PROJECT_ID must be set.');
+  process.exit(1);
+}
 
 // Framer API request helper
 async function frameRequest(method, path, body = null) {
@@ -120,7 +126,7 @@ async function integrateReferoWithFramer() {
 
     // Step 2: Explore Refero API
     console.log('🎨 Step 2: Exploring Refero API...');
-    const referoExplore = await referoRequest('GET', '/api/designs');
+    const referoExplore = await referoRequest('GET', '/api/designs', null, REFERO_TOKEN);
     console.log(`✅ Refero API Status: ${referoExplore.status}`);
     if (referoExplore.status === 200) {
       console.log(`   Available designs: ${JSON.stringify(referoExplore.data, null, 2)}\n`);
