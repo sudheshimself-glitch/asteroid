@@ -4,10 +4,6 @@
       "type": "http",
       "url": "https://api.refero.design/mcp",
       "headers": { "Authorization": "Bearer ${REFERO_TOKEN}" }
-    },
-    "refero-styles": {
-      "command": "node",
-      "args": ["/absolute/path/to/refero-styles-mcp-server/dist/index.js"]
     }
   }
 }
