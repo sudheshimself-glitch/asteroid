@@ -3,6 +3,13 @@
     "refero": {
       "type": "http",
       "url": "https://api.refero.design/mcp"
+    },
+    "illustrator": {
+      "type": "http",
+      "url": "http://localhost:18412/v1/mcp",
+      "headers": {
+        "Authorization": "Bearer ${ILLUSTRATOR_MCP_TOKEN}"
+      }
     }
   }
 }
